@@ -45,6 +45,12 @@ def get_random_lane(car):
         return None
     return random.choice(suitable_lanes)
 
+def get_most_suitable_lane(car):
+    # assigns lorries and vans to the emptiest lanes and other vehicles to the fullest lanes
+    if car in lorries or car in vans:
+        return get_emptiest_lane(car)
+    return get_fullest_lane(car)
+
 def one_queue(rule):
     # simply applies a rule to each car in the queue in turn. Takes a lane selection rule as an argument (e.g. get random lane)
     for car in cars:
@@ -102,12 +108,14 @@ def one_queue_in_step(rule):
 
 # the following dictionaries are for user input
 
-rules = {"0. Choose first suitable lane." : get_first_lane, "1. Choose emptiest suitable lane." : get_emptiest_lane, "2. Choose fullest suitable lane." : get_fullest_lane, "3. Choose random suitable lane." : get_random_lane}
+rules = {"Choose first suitable lane." : get_first_lane, "Choose emptiest suitable lane." : get_emptiest_lane,  "Choose the emptiest lane for lorries and vans, fullest lane otherwise." : get_most_suitable_lane,  "Choose fullest suitable lane." : get_fullest_lane, "Choose random suitable lane." : get_random_lane}
 
-queuing_rules = {"0. Single queue." : one_queue, "1. Single queue in step. Cars are processed in a single queue but k at a time. The k cars are sorted from longest to shortest and then enter the ferry in turn." : one_queue_in_step, "2. Five queues for different classes. The queues are proccessed in turn, starting with lorries and ending with small cars." : five_queues}
+queuing_rules = {"Single queue." : one_queue, "Single queue in step. Cars are processed in a single queue but k at a time. The k cars are sorted from longest to shortest and then enter the ferry in turn." : one_queue_in_step, "Five queues for different classes. The queues are proccessed in turn, starting with lorries and ending with small cars." : five_queues}
 
 rule_keys = [key for key in rules.keys()]
+rule_keys_formatted = [("{}. " + key).format(str(rule_keys.index(key))) for key in rule_keys]
 queue_keys = [key for key in queuing_rules.keys()]
+queue_keys_formatted = [("{}. " + key).format(str(queue_keys.index(key))) for key in queue_keys]
 
 # Main Program -------------------------------------------------------------
 
@@ -138,7 +146,7 @@ while True:                                                                     
     lanes = [[] for i in range(numLanes)]
     cars_in_overflow = []
 
-    text = "\n\nType an integer to choose from one of the following queuing rules:\n\n" + "\n".join(queue_keys) + "\n\n"  #text for user input
+    text = "\n\nType an integer to choose from one of the following queuing rules:\n\n" + "\n".join(queue_keys_formatted) + "\n\n"  #text for user input
     user_input = input(text)
     try:
         user_input = int(user_input)
@@ -146,10 +154,11 @@ while True:                                                                     
         print("Enter an integer.")
         continue
     if user_input in range(len(queuing_rules)):
+        print(queue_keys[user_input])
         queuing_rule = queuing_rules[queue_keys[user_input]]
     else:
         print("Enter an integer in the range.")
-    text = "\n\nType an integer to choose from one of the following rules:\n\n" + "\n".join(rule_keys) + "\n\n"
+    text = "\n\nType an integer to choose from one of the following rules:\n\n" + "\n".join(rule_keys_formatted) + "\n\n"
     user_input = input(text)
     try:
         user_input = int(user_input)
@@ -157,6 +166,7 @@ while True:                                                                     
         print("Enter an integer.")
         continue
     if user_input in range(len(rules)):
+        print(rule_keys[user_input])
         rule = rules[rule_keys[user_input]]
     else:
         print("Enter an integer in the range.")
