@@ -16,10 +16,12 @@ random_Suitable_Lane_Overflow = 9337
 objects = ('First Lane', 'Emptiest Lane', 'Fullest Lane', 'Random Lane')
 y_pos = np.arange(len(objects))
 performance = [first_Suitable_Lane_Overflow,emptiest_Suitable_Lane_Overflow,fullest_Suitable_Lane_Overflow,random_Suitable_Lane_Overflow]
- 
+
+f = plt.figure()
 plt.bar(y_pos, performance, align='center', alpha=1)
 plt.xticks(y_pos, objects)
 plt.ylabel('Overflow (cm)')
 plt.title('Queueing System Overflow')
- 
+
 plt.show()
+f.savefig("Queueing System Overflow")
