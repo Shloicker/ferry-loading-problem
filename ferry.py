@@ -8,7 +8,7 @@ def printSol(lanes, lane_length, cars_in_overflow):
     print("Overflow = " + str(cars_in_overflow))
     print("Total length in overflow = " + str(sum(cars_in_overflow)) + " cm")
 
-def get_first_lane(car):
+def get_first_lane(car, lanes, lane_length, cars):
     # returns the number of the first suitable lane for the car. Returns None if there is no suitable lane.
     for lane in range(len(lanes)):
         if sum(lanes[lane]) + car <= lane_length:
@@ -16,7 +16,7 @@ def get_first_lane(car):
     #If we are here, no lane is suitable.
     return None
 
-def get_emptiest_lane(car):
+def get_emptiest_lane(car, lanes, lane_length, cars):
     # returns the number of the emptiest lane that can fit the car. Returns None if there is no suitable lane.
     suitable_lanes = [lane for lane in range(len(lanes)) if sum(lanes[lane]) + car <= lane_length]
     if suitable_lanes == []:
@@ -27,7 +27,7 @@ def get_emptiest_lane(car):
         if sum(lanes[lane]) == least_space_taken:
             return lane
 
-def get_fullest_lane(car):
+def get_fullest_lane(car, lanes, lane_length, cars):
     # Returns the number of the fullest lane that can fit the car. Returns None if there is no suitable lane.
     suitable_lanes = [lane for lane in range(len(lanes)) if sum(lanes[lane]) + car <= lane_length]
     if suitable_lanes == []:
@@ -38,46 +38,51 @@ def get_fullest_lane(car):
         if sum(lanes[lane]) == most_space_taken:
             return lane
 
-def get_random_lane(car):
+def get_random_lane(car, lanes, lane_length, cars):
     # Returns the number of a random lane that can fit the car. Returns None if there is no suitable lane.
     suitable_lanes = [lane for lane in range(len(lanes)) if sum(lanes[lane]) + car <= lane_length]
     if suitable_lanes == []:
         return None
     return random.choice(suitable_lanes)
 
-def get_most_suitable_lane(car):
+def get_most_suitable_lane(car, lanes, lane_length, cars):
     # assigns lorries and vans to the emptiest lanes and other vehicles to the fullest lanes
-    if car in lorries or car in vans:
-        return get_emptiest_lane(car)
-    return get_fullest_lane(car)
+    if car in range(500, 2000):
+        return get_emptiest_lane(car, lanes, lane_length, cars)
+    return get_fullest_lane(car, lanes, lane_length, cars)
 
-def one_queue(rule):
+def one_queue(rule, cars, lanes, lane_length, cars_in_overflow):
     # simply applies a rule to each car in the queue in turn. Takes a lane selection rule as an argument (e.g. get random lane)
     for car in cars:
-        lane = rule(car)
+        lane = rule(car, lanes, lane_length, cars)
         if lane != None:
             lanes[lane].append(car)
         else:
             cars_in_overflow.append(car)
 
-def five_queues(rule):
+def five_queues(rule, cars, lanes, lane_length, cars_in_overflow):
     # splits the queue into five queues with the different vehicle classes then sends the cars into lanes from lorries to small cars, using a given rule.
+    small_cars = [car for car in cars if car in range(350, 400)]
+    medium_cars = [car for car in cars if car in range(400, 450)]
+    large_cars = [car for car in cars if car in range(450, 500)]
+    vans = [car for car in cars if car in range(500, 600)]
+    lorries = [car for car in cars if car in range(600, 2000)]
     car_types = [lorries, vans, large_cars, medium_cars, small_cars]
     for car_type in car_types:
         for car in car_type:
-            lane = rule(car)
+            lane = rule(car, lanes, lane_length, cars)
             if lane != None:
                 lanes[lane].append(car)
             else:
                 cars_in_overflow.append(car)
 
-def one_queue_in_step(rule):
+def one_queue_in_step(rule, cars, lanes, lane_length, cars_in_overflow):
     # single queue but processes k cars at a time. The k cars are sorted from longest to shortest then enter the ferry in turn using a given rule.
     def process(car_batch):
         # a 'sub function' for processing the batch of k cars as this will be called twice
         car_batch.sort(reverse=True)                                             # sorts from longest to shortest
         for batch_car in car_batch:                                              # allocates each car to their lane using the given rule
-            lane = rule(batch_car)
+            lane = rule(batch_car, lanes, lane_length, cars)
             if lane != None:
                 lanes[lane].append(batch_car)
             else:
@@ -106,71 +111,89 @@ def one_queue_in_step(rule):
             print("Enter an integer in the range.")
             continue
 
-# the following dictionaries are for user input
+def one_queue_in_step_no_input(rule, cars, lanes, lane_length, cars_in_overflow, k):
+    # single queue but processes k cars at a time. The k cars are sorted from longest to shortest then enter the ferry in turn using a given rule.
+    def process(car_batch):
+        # a 'sub function' for processing the batch of k cars as this will be called twice
+        car_batch.sort(reverse=True)                                             # sorts from longest to shortest
+        for batch_car in car_batch:                                              # allocates each car to their lane using the given rule
+            lane = rule(batch_car, lanes, lane_length, cars)
+            if lane != None:
+                lanes[lane].append(batch_car)
+            else:
+                cars_in_overflow.append(batch_car)                               # endless while loop in case user gives invalid input
+    cars_to_be_processed = []
+    for car in cars:
+        cars_to_be_processed.append(car)
+        if len(cars_to_be_processed) == k:                                # we only want to process the batch one it reaches the desired size
+            process(cars_to_be_processed)
+        else:
+            continue                                                      # so we don't execute the following line if it hasn't reached the desired size
+        cars_to_be_processed = []                                         # clears the batch since the cars in it have been processed
+    process(cars_to_be_processed)                                         # this will process the remaining cars if we have reached the end of the queues
 
-rules = {"Choose first suitable lane." : get_first_lane, "Choose emptiest suitable lane." : get_emptiest_lane,  "Choose the emptiest lane for lorries and vans, fullest lane otherwise." : get_most_suitable_lane,  "Choose fullest suitable lane." : get_fullest_lane, "Choose random suitable lane." : get_random_lane}
+# # the following dictionaries are for user input
 
-queuing_rules = {"Single queue." : one_queue, "Single queue in step. Cars are processed in a single queue but k at a time. The k cars are sorted from longest to shortest and then enter the ferry in turn." : one_queue_in_step, "Five queues for different classes. The queues are proccessed in turn, starting with lorries and ending with small cars." : five_queues}
+# rule_keys = ["1. Choose first suitable lane.", "2. Choose emptiest suitable lane.", "3. Choose fullest suitable lane.", "4. Choose a random suitable lane.", "5. Choose the emptiest lane for lorries and vans, fullest lane otherwise."]
+# rules = [get_first_lane, get_emptiest_lane, get_fullest_lane, get_random_lane, get_most_suitable_lane]
 
-rule_keys = [key for key in rules.keys()]
-rule_keys_formatted = [("{}. " + key).format(str(rule_keys.index(key))) for key in rule_keys]
-queue_keys = [key for key in queuing_rules.keys()]
-queue_keys_formatted = [("{}. " + key).format(str(queue_keys.index(key))) for key in queue_keys]
+# queue_keys = ["1. Single queue.", "2. Five queues for different classes. The queues are proccessed in turn, starting with lorries and ending with small cars.", "3. Single queue in step. Cars are processed in a single queue but k at a time. The k cars are sorted from longest to shortest and then enter the ferry in turn."]
+# queues = [one_queue, five_queues, one_queue_in_step]
 
-# Main Program -------------------------------------------------------------
+# # Main Program -------------------------------------------------------------
 
-cars = []
-with open("input.txt","r") as f:
-    lane_length = int(f.readline())
-    numLanes = int(f.readline())
-    for line in f:
-        cars.append(int(line))
-# creating lists of different car types
-small_cars = [car for car in cars if car in range(350, 400)]
-medium_cars = [car for car in cars if car in range(400, 450)]
-large_cars = [car for car in cars if car in range(450, 500)]
-vans = [car for car in cars if car in range(500, 600)]
-lorries = [car for car in cars if car in range(600, 2000)]
+# cars = []
+# with open("input.txt","r") as f:
+#     lane_length = int(f.readline())
+#     numLanes = int(f.readline())
+#     for line in f:
+#         cars.append(int(line))
+# # creating lists of different car types
+# small_cars = [car for car in cars if car in range(350, 400)]
+# medium_cars = [car for car in cars if car in range(400, 450)]
+# large_cars = [car for car in cars if car in range(450, 500)]
+# vans = [car for car in cars if car in range(500, 600)]
+# lorries = [car for car in cars if car in range(600, 2000)]
 
-# Having read in the file, output some information to the screen
-print("Number of vehicles           = " + str(len(cars)))
-print("Total length of vehicles     = " + str(sum(cars)) + " cm")
-print("Number of lanes              = " + str(numLanes))
-print("Capacity per lane            = " + str(lane_length) + " cm")
-print("List of all vehicle lengths  = " + str(cars))
+# # Having read in the file, output some information to the screen
+# print("Number of vehicles           = " + str(len(cars)))
+# print("Total length of vehicles     = " + str(sum(cars)) + " cm")
+# print("Number of lanes              = " + str(numLanes))
+# print("Capacity per lane            = " + str(lane_length) + " cm")
+# print("List of all vehicle lengths  = " + str(cars))
 
-while True:                                                                         # endless while loop for user input
+# while True:                                                                         # endless while loop for user input
 
-    # Now declare the data structures used for storing the vehicles in each lane
-    # and the vehicles in the overflow
-    lanes = [[] for i in range(numLanes)]
-    cars_in_overflow = []
+#     # Now declare the data structures used for storing the vehicles in each lane
+#     # and the vehicles in the overflow
+#     lanes = [[] for i in range(numLanes)]
+#     cars_in_overflow = []
 
-    text = "\n\nType an integer to choose from one of the following queuing rules:\n\n" + "\n".join(queue_keys_formatted) + "\n\n"  #text for user input
-    user_input = input(text)
-    try:
-        user_input = int(user_input)
-    except ValueError:
-        print("Enter an integer.")
-        continue
-    if user_input in range(len(queuing_rules)):
-        print(queue_keys[user_input])
-        queuing_rule = queuing_rules[queue_keys[user_input]]
-    else:
-        print("Enter an integer in the range.")
-    text = "\n\nType an integer to choose from one of the following rules:\n\n" + "\n".join(rule_keys_formatted) + "\n\n"
-    user_input = input(text)
-    try:
-        user_input = int(user_input)
-    except ValueError:
-        print("Enter an integer.")
-        continue
-    if user_input in range(len(rules)):
-        print(rule_keys[user_input])
-        rule = rules[rule_keys[user_input]]
-    else:
-        print("Enter an integer in the range.")
-        continue
-    queuing_rule(rule)                                         # finally calls the desired queuing rule with the desired lane allocation rule as the argument
+#     text = "\n\nType an integer to choose from one of the following queuing rules:\n\n" + "\n".join(queue_keys) + "\n\n"  #text for user input
+#     user_input = input(text)
+#     try:
+#         user_input = int(user_input)
+#     except ValueError:
+#         print("Enter an integer.")
+#         continue
+#     if user_input in range(len(queues)):
+#         queuing_rule = queues[user_input - 1]
+#         print(queue_keys[user_input - 1])
+#     else:
+#         print("Enter an integer in the range.")
+#     text = "\n\nType an integer to choose from one of the following rules:\n\n" + "\n".join(rule_keys) + "\n\n"
+#     user_input = input(text)
+#     try:
+#         user_input = int(user_input)
+#     except ValueError:
+#         print("Enter an integer.")
+#         continue
+#     if user_input in range(len(rules)):
+#         rule = rules[user_input - 1]
+#         print(rule_keys[user_input - 1])
+#     else:
+#         print("Enter an integer in the range.")
+#         continue
+#     queuing_rule(rule)                                         # finally calls the desired queuing rule with the desired lane allocation rule as the argument
 
-    printSol(lanes, lane_length, cars_in_overflow)             # prints details of the solution
+#     printSol(lanes, lane_length, cars_in_overflow)             # prints details of the solution
