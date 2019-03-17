@@ -29,7 +29,7 @@ for rule in rules:
         print(measures_of_cars_in_overflow)
         measures_of_cars_in_overflow.append(sum(cars_in_overflow))
 
-rule_names = ["Get First Lane", "Get Emptiest Lane", "Get Fullest Lane", "Get Random Lane\n(Average)", "Get Most Suitable Lane"]
+rule_names = ['First', 'Emptiest', 'Fullest', 'Random(Avg)', 'Most Suitable']
 f = plt.figure()
 plt.bar(range(len(rule_names)), measures_of_cars_in_overflow)
 plt.xticks(range(len(rule_names)), rule_names)
