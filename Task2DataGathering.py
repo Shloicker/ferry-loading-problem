@@ -25,7 +25,7 @@ for k in range(1, 51):
 
 # finding the k value with the least cars in overflow
 min_k_value = measures_of_cars_in_overflow.index(min(measures_of_cars_in_overflow)) + 1
-print(min_k_value)
+print("\n\nBest k value:" + str(min_k_value))
 # verifying the k value
 lanes = [[] for i in range(numLanes)]
 cars_in_overflow = []
