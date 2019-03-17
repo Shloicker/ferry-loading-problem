@@ -43,19 +43,31 @@ f.savefig("Performance of Different k Values in Step Queuing Rule.pdf")
 
 # ------- Plotting Data for Five Queue System -------------
 
-measures_of_cars_in_overflow = []
 rules = [ferry.get_first_lane, ferry.get_emptiest_lane, ferry.get_fullest_lane, ferry.get_random_lane, ferry.get_most_suitable_lane]
+measures_of_cars_in_overflow = []
 for rule in rules:
-    lanes = [[] for i in range(numLanes)]
-    cars_in_overflow = []
-    ferry.five_queues(rule, cars, lanes, lane_length, cars_in_overflow)
-    measures_of_cars_in_overflow.append(sum(cars_in_overflow))
+    if rule == ferry.get_random_lane:
+        measures = []
+        for i in range(1000):
+            lanes = [[] for i in range(numLanes)]
+            cars_in_overflow = []
+            ferry.five_queues(ferry.get_random_lane, cars, lanes, lane_length, cars_in_overflow)
+            measures.append(sum(cars_in_overflow))
+        average = (sum(measures))/1000
+        measures_of_cars_in_overflow.append(average)
+        continue
+    else:
+        lanes = [[] for i in range(numLanes)]
+        cars_in_overflow = []
+        ferry.five_queues(rule, cars, lanes, lane_length, cars_in_overflow)
+        print(measures_of_cars_in_overflow)
+        measures_of_cars_in_overflow.append(sum(cars_in_overflow))
 
 f = plt.figure()
-rule_names = ["Get First Lane", "Get Emptiest Lane", "Get Fullest Lane", "Get Random Lane", "Get Most Suitable Lane"]
+rule_names = ['First', 'Emptiest', 'Fullest', 'Random(Avg)', 'Most Suitable']
 plt.bar(range(len(rule_names)), measures_of_cars_in_overflow)
 plt.xticks(range(len(rule_names)), rule_names)
 plt.ylabel("Total Length of Cars in Overflow")
 plt.xlabel("Rules")
-plt.title("Performance of Different Rules When Using the Five Queue System")
-f.savefig("Performance of Different Rules When Using the Five Queue System.pdf")
+plt.title("Performance of Different Rules when using the Five Queue System")
+f.savefig("Performance of Different Rules when using the Five Queue System.pdf")
