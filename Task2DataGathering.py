@@ -30,7 +30,7 @@ print("\n\nBest k value:" + str(min_k_value))
 lanes = [[] for i in range(numLanes)]
 cars_in_overflow = []
 ferry.iterated_process_no_input(ferry.get_fullest_lane, cars, lanes, lane_length, cars_in_overflow, min_k_value)
-print(sum(cars_in_overflow))
+print("Total cars in overflow with best k value: " + str(sum(cars_in_overflow)))
 print(min(measures_of_cars_in_overflow))
 
 #plotting a line graph of k values
