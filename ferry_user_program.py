@@ -5,8 +5,8 @@ import ferry
 rule_keys = ["0. Choose first suitable lane.", "1. Choose emptiest suitable lane.", "2. Choose fullest suitable lane.", "3. Choose a random suitable lane.", "4. Choose the emptiest lane for lorries and vans, fullest lane otherwise."]
 rules = [ferry.get_first_lane, ferry.get_emptiest_lane, ferry.get_fullest_lane, ferry.get_random_lane, ferry.get_most_suitable_lane]
 
-queue_keys = ["0. Single queue.", "1. Five queues for different classes. The queues are proccessed in turn, starting with lorries and ending with small cars.", "2. Single queue in step. Cars are processed in a single queue but k at a time. The k cars are sorted from longest to shortest and then enter the ferry in turn."]
-queues = [ferry.one_queue, ferry.five_queues, ferry.one_queue_in_step]
+queue_keys = ["0. Single queue.", "1. Five queues for different classes. The queues are proccessed in turn, starting with lorries and ending with small cars.", "2. Iterated process. Cars are processed in a single queue but k at a time. The k cars are sorted from longest to shortest and then enter the ferry in turn."]
+queues = [ferry.one_queue, ferry.five_queues, ferry.iterated_process]
 
 # Main Program -------------------------------------------------------------
 
