@@ -112,7 +112,7 @@ def iterated_process(rule, cars, lanes, lane_length, cars_in_overflow):
             continue
 
 def iterated_process_no_input(rule, cars, lanes, lane_length, cars_in_overflow, k):
-    # single queue but processes k cars at a time. The k cars are sorted from longest to shortest then enter the ferry in turn using a given rule.
+    # identical to iterated process but without user input; it simply takes a k value as an argument instead. This is for the purpose of analysis.
     def process(car_batch):
         # a 'sub function' for processing the batch of k cars as this will be called twice
         car_batch.sort(reverse=True)                                             # sorts from longest to shortest
