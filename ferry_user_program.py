@@ -1,6 +1,6 @@
 import ferry
 
-# the following dictionaries are for user input
+# the following lists are for user input
 
 rule_keys = ["0. Choose first suitable lane.", "1. Choose emptiest suitable lane.", "2. Choose fullest suitable lane.", "3. Choose a random suitable lane.", "4. Choose the emptiest lane for lorries and vans, fullest lane otherwise."]
 rules = [ferry.get_first_lane, ferry.get_emptiest_lane, ferry.get_fullest_lane, ferry.get_random_lane, ferry.get_most_suitable_lane]
@@ -10,6 +10,7 @@ queues = [ferry.one_queue, ferry.five_queues, ferry.iterated_process]
 
 # Main Program -------------------------------------------------------------
 
+# forming the sequence of cars from file
 cars = []
 with open("input.txt","r") as f:
     lane_length = int(f.readline())
@@ -40,7 +41,6 @@ while True:                                                                     
         continue
     if user_input in range(len(queues)):
         queuing_rule = queues[user_input]
-        print(queue_keys[user_input])
     else:
         print("Enter an integer in the range.")
     text = "\n\nType an integer to choose from one of the following rules:\n\n" + "\n".join(rule_keys) + "\n\n"
@@ -52,10 +52,9 @@ while True:                                                                     
         continue
     if user_input in range(len(rules)):
         rule = rules[user_input]
-        print(rule_keys[user_input])
     else:
         print("Enter an integer in the range.")
         continue
-    queuing_rule(rule, cars, lanes, lane_length, cars_in_overflow)                                         # finally calls the desired queuing rule with the desired lane allocation rule as the argument
+    queuing_rule(rule, cars, lanes, lane_length, cars_in_overflow)   # finally calls the desired queuing rule with the desired lane allocation rule as the argument
 
     ferry.printSol(lanes, lane_length, cars_in_overflow)             # prints details of the solution
