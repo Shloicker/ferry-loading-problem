@@ -17,7 +17,7 @@ print("List of all vehicle lengths  = " + str(cars))
 
 # -------- Plotting Data for Iterated Process ----------------
 measures_of_cars_in_overflow = []
-for k in range(1, 51):
+for k in range(1, 51):                            # applying the queuing rule using a range of k values
     lanes = [[] for i in range(numLanes)]
     cars_in_overflow = []
     ferry.iterated_process_no_input(ferry.get_fullest_lane, cars, lanes, lane_length, cars_in_overflow, k)
@@ -26,12 +26,7 @@ for k in range(1, 51):
 # finding the k value with the least cars in overflow
 min_k_value = measures_of_cars_in_overflow.index(min(measures_of_cars_in_overflow)) + 1
 print("\n\nBest k value:" + str(min_k_value))
-# verifying the k value
-lanes = [[] for i in range(numLanes)]
-cars_in_overflow = []
-ferry.iterated_process_no_input(ferry.get_fullest_lane, cars, lanes, lane_length, cars_in_overflow, min_k_value)
-print("Total cars in overflow with best k value: " + str(sum(cars_in_overflow)))
-print(min(measures_of_cars_in_overflow))
+print("\nTotal cars in overflow with best k value: " + str(min(measures_of_cars_in_overflow)))
 
 #plotting a line graph of k values
 f = plt.figure()
@@ -43,6 +38,7 @@ f.savefig("Performance of Different k Values in Step Queuing Rule.pdf")
 
 # ------- Plotting Data for Five Queue System -------------
 
+# code is almost identical to task 1 but with five queue rule
 rules = [ferry.get_first_lane, ferry.get_emptiest_lane, ferry.get_fullest_lane, ferry.get_random_lane, ferry.get_most_suitable_lane]
 measures_of_cars_in_overflow = []
 for rule in rules:
