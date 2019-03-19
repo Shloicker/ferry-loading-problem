@@ -33,8 +33,8 @@ f = plt.figure()
 plt.plot(range(1, 51), measures_of_cars_in_overflow)
 plt.ylabel('Total Length of Cars in Overflow')
 plt.xlabel("k values")
-plt.title('Performance of Different k Values in Step Queuing Rule')
-f.savefig("Performance of Different k Values in Step Queuing Rule.pdf")
+plt.title('Performance of Different k Values in Iterated Process')
+f.savefig("Performance of Different k Values in Iterated Process.pdf")
 
 # ------- Plotting Data for Five Queue System -------------
 
