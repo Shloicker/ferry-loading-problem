@@ -2,17 +2,19 @@ import random
 import ferry
 import matplotlib.pyplot as plt
 
-# to test the effects of changing lane length and number of lanes we will use the best performing queuing and loading rule from previous analysis,
-# that is, the five queue system with the fullest lane rule
+# to test the effects of changing lane length and number of lanes we will use the best performing queuing and loading rule from previous
+# analysis, that is, the five queue system with the fullest lane rule
 
-numLanes_measures = []
+# here we wil iterate over different numbers of lanes (with appropriately adjusted lane length) and generate random sequences to
+# observe the performance of the forementioned process with different ferry configurations
+numLanes_measures = []                   # contains the measures of each ferry setup
 repetitions = 10000
 for i in range(50, 121, 5):
     numLanes = i
-    lane_length = round(2550/i) * 100
+    lane_length = round(2550/i) * 100      # i.e. 255,000 / i rounded to the nearest 100
     print(lane_length)
-    measures = []
-    for j in range(repetitions):
+    measures = []                          # contains the measures of each repetition
+    for j in range(repetitions):           # similar to previous code
         lanes = [[] for i in range(numLanes)]
         cars_in_overflow = []
 
@@ -30,6 +32,7 @@ for i in range(50, 121, 5):
     average = sum(measures)/repetitions
     numLanes_measures.append(average)
 
+# plotting a line graph of performance with different numbers of lanes
 f = plt.figure()
 plt.plot(range(50, 121, 5), numLanes_measures)
 plt.xlabel("Number of Lanes")
